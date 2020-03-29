@@ -114,8 +114,9 @@ jobs:
           command: |
             if [[ ! -z ${GITHUB_TOKEN} ]]; then
               du -sh release/*
-              VERSION=$(my-binary --version)
-              ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
+              ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -n "SkyHawk Recovery Project $(echo $VER)" -b "Latest Release for $(echo $CODENAME)" -c ${CIRCLE_SHA1} -delete v$(echo $VER) release/
+            else
+              echo -e "\n Files not uploaded due to absent of GITHUB_TOKEN as env variable"
             fi
 
 workflows:
