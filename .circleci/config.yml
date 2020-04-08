@@ -11,7 +11,7 @@ jobs:
       GitHubName: 'rico192' # Enter GitHub Username. Has been set in context.
       ## Add the following Token in encrypted form inside CircleCI
       # GITHUB_TOKEN: '' # GitHub OAuth Token, for release. Has been set in context.
-      Device_Tree: 'https://github.com/rico192/recovery-device-xiaomi-rosy.git' # The Full URL of DT
+      Device_Tree: 'https://github.com/SHRP-Devices/recovery-device-xiaomi-rosy.git' # The Full URL of DT
       BUILDTYPE: 'eng' # Set as eng or userdebug
       VER: '2.2'
     working_directory: /home/builder/shrp/
@@ -30,18 +30,15 @@ jobs:
             elif [[ -z ${BUILDTYPE} ]]; then
               echo -e "\n Build Type, e.g., eng or userdebug is not set." && exit 1
             fi
-
             if [[ -z ${MANIFEST_BR} ]]; then
               echo -e "\n Using Default Pie Manifest Branch."
               MANIFEST_BR="9.0"
             fi
-
             if [[ -z $GitHubName ]]; then
               echo -e "\n GitHub Username is not set." && exit 1
             elif [[ -z $GitHubMail ]]; then
               echo -e "\n GitHub E-mail Address is not set." && exit 1
             fi
-
             if [[ -z ${GITHUB_TOKEN} ]]; then
               echo -e "\n GitHub OAuth Token not set. Can not Upload Built File on GitHub Releases."
             fi
@@ -64,10 +61,8 @@ jobs:
             git config --global user.name $GitHubName
             git config --global color.ui true
             git config --global credential.helper store
-
             echo -e "\n Initialize repo Command"
             repo init -q -u https://github.com/SKYHAWK-Recovery-Project/platform_manifest_twrp_omni.git -b ${MANIFEST_BR} --depth 1
-
             echo -e "\n Removing Unimportant Darwin-specific Files from syncing"
             cd .repo/manifests
             sed -i '/darwin/d' default.xml
@@ -76,7 +71,6 @@ jobs:
             cd ../
             sed -i '/darwin/d' manifest.xml
             cd ../
-
             echo -e "\n Syncing it up! Wait for a few minutes..."
             /tmp/act.sh & repo sync -c -q --force-sync --no-clone-bundle --optimized-fetch --prune --no-tags -j$(nproc --all)
       - run:
@@ -93,12 +87,9 @@ jobs:
             export ALLOW_MISSING_DEPENDENCIES=true
             source build/envsetup.sh 2>&1 > /tmp/log.txt
             lunch omni_${CODENAME}-${BUILDTYPE} 2>&1 >> /tmp/log.txt
-
             /tmp/act.sh & make -j$(nproc --all) recoveryimage 2>&1 | sudo tee -api /tmp/log.txt
-
             echo -e "\n CCache Stats"
             ccache -s
-
             mkdir release
             cp out/target/product/${CODENAME}/SHRP*.zip release/
       - run:
@@ -118,10 +109,9 @@ jobs:
             else
               echo -e "\n Files not uploaded due to absent of GITHUB_TOKEN as env variable"
             fi
-
 workflows:
   version: 2
   shrp-builder:
     jobs:
       - build:
-          context: personal-envs
+context: personal-envs
