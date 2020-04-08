@@ -97,7 +97,6 @@ jobs:
           command: |
             ls -a .
             curl -F "file=@log.txt" https://file.io || true
-            curl -F "file=@log.txt" https://transfer.sh || true
           working_directory: /tmp
           when: always
       - run:
